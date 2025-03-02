@@ -1,4 +1,4 @@
 module.exports = {
-    name: 'Janet',
-    color: 'Orange', 
+    name: 'sadie',
+    color: 'black', 
 }
