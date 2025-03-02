@@ -1,0 +1,3 @@
+mkdirsync = create a file 
+fs = is the one that has the function for managing file. (ex fs.mkdir. use by: const fs = require('fs'))
+
