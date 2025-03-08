@@ -13,10 +13,10 @@ app.get('/', (req,res) => {
     res.render('home.ejs')
 })
 
-app.get('/r/:subredit', (req, res) => {
+app.get('/r/:subreddit', (req, res) => {
     console.log(req.params)
     const { subreddit } = req.params;
-    res.send(`<h1>Browsing the ${subreddit} subreddit </h1>`)
+    res.render('subreddit', {subreddit})
 })
 
 app.get('/r/:subreddit/:postID', (req,res) => {
@@ -26,8 +26,9 @@ app.get('/r/:subreddit/:postID', (req,res) => {
     res.send(`<h1> Viewing Post: ${subid} on the ${subreddit} subreddit `);
 })
 
-app.get('/cat', (req,res) => {
-    res.send('Meow');
+app.get('/cats', (req,res) => {
+    const cats = ['Blue', 'Rocket', 'Monty', 'Stephanie', 'Winston']
+    res.render('cats', {cats})
 })
 
 app.get('/dog', (req, res) => {
