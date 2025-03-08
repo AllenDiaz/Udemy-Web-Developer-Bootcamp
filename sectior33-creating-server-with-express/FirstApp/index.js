@@ -4,10 +4,12 @@ const path = require('path')
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, '/views'))
+app.use(express.static(path.join(__dirname, 'public')));
 // app.use((req, res) => {
 //     console.log("We got a new responds")
 //     res.send('<h1>This is my webpage!</h1>')
 // })
+
 
 app.get('/', (req,res) => {
     res.render('home.ejs')
