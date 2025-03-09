@@ -5,7 +5,11 @@
 BootCamp Reviewer
 
 *Express
-
-
+REST - REPRESENTATIONAL STATE TRANSFER
+GET /comments - list all coments
+POST /comments - Create a new comment
+GET /comments/:id - Get one comment (using ID)
+PATCH /comments/:id - Update one comment
+DELETE /comments/:id - Destroy one comment 
 
 All of my question (what, why, when)
