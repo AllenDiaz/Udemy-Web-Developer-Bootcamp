@@ -4,17 +4,50 @@ const path = require('path');
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.set('views', path.join(__dirname, '/views'))
+app.set('view engine', 'ejs')
+app.use(express.static(path.join(__dirname, 'public')))
 
-app.set(express.static(path.join(__dirname, 'public') ))
+const comments = [
+    {
+        username: 'Todd',
+        comment: 'lol that is so funny!'
+    },
+    {
+        username: 'Skyler',
+        comment: 'I like to go birdwatching with my dog'
+    },
+    {
+        username: 'Sk8erBoi',
+        comment: 'Plz delete your account'
+    },
+    {
+        username: 'onlysayswoof',
+        comment: 'woof woof woof'
+    }
+]
 
 app.get('/tacos', (req, res) => {
     console.log(req.body)
     res.send("GET /tacos response")
 })
 
-app.post('/tacos', (req, res) => {
+app.get('/comments', (req, res) => {
+    res.render('comments/index', { comments })
+});
 
-    const { meat, qty} = req.body
+app.get('/comments/new', (req, res) => {
+    res.render('comments/new')
+});
+
+app.post('/comments', (req, res) => { 
+    const { username, comment } = req.body;
+    comments.push({username, comment})
+    res.redirect('/comments');
+});
+
+app.post('/tacos', (req, res) => {
+    const { meat, qty } = req.body
     res.send(`Ok, here are your ${qty} ${meat}`)
 })
 
