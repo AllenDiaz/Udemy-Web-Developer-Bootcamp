@@ -12,7 +12,7 @@ app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'ejs')
 app.use(express.static(path.join(__dirname, 'public')))
 
-const comments = [
+let comments = [
     {
         id: uuid(),
         username: 'Todd',
@@ -68,6 +68,18 @@ app.patch('/comments/:id', (req, res) => {
     foundComment.comment = newCommentText;
     res.redirect(`/comments`)
     });
+app.delete('/comments/:id', (req, res) => {
+    const { id } = req.params;
+    // const comment = comments.find( c => c.id === id);
+    const commentIndex = comments.findIndex(c => c.id === id);
+    if (commentIndex !== -1) {
+        comments.splice(commentIndex, 1);
+    }
+    res.redirect('/comments');
+    // comments = comments.filter(c => c.id !== id);
+
+    res.redirect('/comments')
+})
     
 
 app.post('/comments', (req, res) => { 
