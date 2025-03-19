@@ -12,4 +12,7 @@ GET /comments/:id - Get one comment (using ID)
 PATCH /comments/:id - Update one comment
 DELETE /comments/:id - Destroy one comment 
 
+req.body = the data came from the value of the name 
+req.param = data on a parameter of the url
+
 All of my question (what, why, when)
