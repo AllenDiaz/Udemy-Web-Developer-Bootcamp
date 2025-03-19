@@ -15,4 +15,8 @@ DELETE /comments/:id - Destroy one comment
 req.body = the data came from the value of the name 
 req.param = data on a parameter of the url
 
+*MongoDB - not sql 
+** Mongoose 
+    >Object Data Mapper
+    > to model the application
 All of my question (what, why, when)
