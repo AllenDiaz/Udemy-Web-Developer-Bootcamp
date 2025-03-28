@@ -20,7 +20,7 @@ req.param = data on a parameter of the url
     >Object Data Mapper
     > to model the application
 mongosh = to access monggo
-<const Movie = mongoose.model('Movie', movieSchema) > = to define schema for monggo
+<const Movie = mongoose.model('Movie', movieSchema) > = to define schema for monggo using node
 < db.movies.find({title: {$in: ['Amadeus', 'Stand By Me']}}) > = finding many elements
 < Movie.updateMany({title: {$in: ['Amadeus', 'Stand By Me']}}, {score: 10}).then(res => console.log(res)) > = update many database
 

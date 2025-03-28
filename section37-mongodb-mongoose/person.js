@@ -16,6 +16,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/shopApp')
     personSchema.virtual('fullName').get(function() {
         return `${this.first} ${this.last}`
     })
+    personSchema.pre('save', async function() {
+        console.log("ABOUT TO SAVE!!!")
+    })
+    personSchema.post('save', async function() {
+        console.log("JUST SAVED!!!")
+    })
     const Person = mongoose.model('Person', personSchema);
     // const star = "Patrick Stewart";
 
