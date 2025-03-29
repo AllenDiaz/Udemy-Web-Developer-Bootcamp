@@ -3,7 +3,8 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose')
 const Product = require('./models/product');
-
+const methodOverride = require('method-override')
+app.use(methodOverride('_method')) 
 
 mongoose.connect('mongodb://127.0.0.1:27017/farmStand')
 
@@ -42,6 +43,19 @@ app.get('/products/:id', async (req, res) => {
     // console.log(product)
     res.render('products/show', { product })
 })
+
+app.get('/products/:id/edit', async (req, res) => {
+    const { id } = req.params;
+    const product = await Product.findById(id)
+    res.render('products/edit', { product })
+})
+
+app.put('/products/:id', async (req, res) => {
+    const { id } = req.params;
+    const product = await Product.findByIdAndUpdate(id, req.body, { runValidators: true, new: true })
+    res.redirect(`/products/${product.id}`)
+})
+
 
 app.listen(3000, () => {
     console.log('APP IS LISTENING ON PORT 3000!');
