@@ -12,7 +12,8 @@ const productSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['fruit', 'vegetables', 'dairy']
+        lowercase: true,
+        enum: ['fruit', 'vegetable', 'dairy']
     }
 })
 
