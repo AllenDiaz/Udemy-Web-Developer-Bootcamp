@@ -3,8 +3,21 @@ const morgan = require('morgan');
 const app = express();
 
 
-app.use(morgan('tiny'))
+app.use(morgan('common'))
+app.use((res, req, next) => {
+    console.log('This is my first middleware')
+    return next();
+})
+ 
+app.use((res, req, next) => {
+    console.log('This is my second middleware')
+    return next();
+})
 
+app.use((res, req, next) => {
+    console.log('This is my second middleware')
+    return next();
+})
 
 app.get('/', (req, res) => {
     res.send('HOME PAGE')
