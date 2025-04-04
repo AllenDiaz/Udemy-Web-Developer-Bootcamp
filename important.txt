@@ -25,3 +25,6 @@ mongosh = to access monggo
 < Movie.updateMany({title: {$in: ['Amadeus', 'Stand By Me']}}, {score: 10}).then(res => console.log(res)) > = update many database
 
 All of my question (what, why, when)
+
+* MIDDLEWARE
+- Middleware are function that run during the request/response lifecycle
