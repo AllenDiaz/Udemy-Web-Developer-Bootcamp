@@ -3,17 +3,25 @@ const morgan = require('morgan');
 const app = express();
 
 
-app.use(morgan('tiny'))
-app.use((req, res, next) => {
-    req.requestTime = Date.now();
-    console.log(req.method, req.path);
-    next();
-})
+// app.use(morgan('tiny'))
+// app.use((req, res, next) => {
+//     req.requestTime = Date.now();
+//     console.log(req.method, req.path);
+//     next();
+// })
 
 app.use('/dogs', (req, res, next) => {
     console.log("I LOVE DOGS!! ")
     next();
 } )
+
+const auth = (req, res, next) => {
+    const { password } = req.query;
+    if(password === 'open') {
+        next()
+    }
+    res.send('sorry you need a password')
+}
 // app.use((res, req, next) => {
 //     console.log('This is my first middleware')
 //     return next();
@@ -27,15 +35,19 @@ app.use('/dogs', (req, res, next) => {
 // app.use((res, req, next) => {
 //     console.log('This is my second middleware')
 //     return next();
-// })
+// }) 
 
-app.get('/', (req, res) => {
+app.get('/', auth, (req, res) => {
     console.log(`Request time date ${req.requestTime}`)
     res.send('HOME PAGE')
 })
 
 app.get('/dogs', (req, res) => {
     res.send('Woof Woof!')
+})
+
+app.get('/secret', auth, (req, res) => {
+    res.send('My Secret is walking with God')
 })
 
 app.use((req, res) => {
