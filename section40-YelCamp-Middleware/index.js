@@ -9,6 +9,11 @@ app.use((req, res, next) => {
     console.log(req.method, req.path);
     next();
 })
+
+app.use('/dogs', (req, res, next) => {
+    console.log("I LOVE DOGS!! ")
+    next();
+} )
 // app.use((res, req, next) => {
 //     console.log('This is my first middleware')
 //     return next();
@@ -29,8 +34,16 @@ app.get('/', (req, res) => {
     res.send('HOME PAGE')
 })
 
-app.get('/dog', (req, res) => {
+app.get('/dogs', (req, res) => {
     res.send('Woof Woof!')
+})
+
+app.use((req, res) => {
+    res.send('<h1 style="color:red; magin: 20 20"> Not found 404 </h1>')
+})
+
+app.use((req, res) => {
+    res.status(404).send('Not Found')
 })
 
 app.listen(3000, () => {
