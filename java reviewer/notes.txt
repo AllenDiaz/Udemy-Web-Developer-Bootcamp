@@ -1,4 +1,0 @@
-JDK - Java Development Kit
->tools to transform java into byte code
-JVM - Java Virtual machine 
-> The machine that runs the code 
