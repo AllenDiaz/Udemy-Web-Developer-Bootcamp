@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+// const AppError = require('./AppError');
+const AppError = require('./appError');
 const app = express();
 
 
@@ -21,7 +23,8 @@ const auth = (req, res, next) => {
         next()
     }
     // res.send('sorry you need a password')
-    throw new Error('Password required!')
+    res.status(401)
+    throw new AppError('password required', 401)
 }
 // app.use((res, req, next) => {
 //     console.log('This is my first middleware')
@@ -51,6 +54,10 @@ app.get('/secret', auth, (req, res) => {
     res.send('My Secret is walking with God')
 })
 
+app.get('/admin', (req, res) => {
+    throw new AppError('You not an Admin', 403)
+})
+
 app.get('/error', (req, res) => {
     chicken.fly()
 })
@@ -64,12 +71,8 @@ app.use((req, res) => {
 })
 
 app.use((err, req, res, next) => {
-    console.log("*****************************")
-    console.log("**********ERORRR*************")
-    console.log("*****************************")
-    console.log(err);
-    next(err);
-    // res.status(500).send('Error is found')
+    const { status = 500, message = "Something went wrong" } = err;
+    res.status(status).send(message)
 })
 
 app.listen(3000, () => {
