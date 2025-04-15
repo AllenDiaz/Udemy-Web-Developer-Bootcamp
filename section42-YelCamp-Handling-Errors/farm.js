@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const Product = require('./models/product');
 const methodOverride = require('method-override');
 const AppError = require('./appError');
+const wrapAsync = require('./utils/wrapAsync');
 
 mongoose.connect('mongodb://127.0.0.1:27017/farmStand')
 
@@ -44,7 +45,6 @@ app.get('/products/new',(req, res) => {
 
 // adding or creating new object and go to created Object
 app.post('/products', async (req, res, next) => {
-    // const { name, price, category } = req.body();
     try {
         const newProduct = new Product(req.body)
         await newProduct.save();
@@ -56,44 +56,31 @@ app.post('/products', async (req, res, next) => {
     }
 })
 
-app.get('/products/:id', async (req, res, next) => {
-    try{
+app.get('/products/:id', wrapAsync(async (req, res) => {
         const { id } = req.params;
-        const product = await Product.findById(id)
+        const product = await Product.findById(id);
         if(!product) {
            throw new AppError('Product not found', 404);
         }
-        else {
             res.render('products/show', { product })
-        }
-    }catch(e) {
-        next(e);
-    }
     // console.log(product)
-})
+}));
 
-app.get('/products/:id/edit', async (req, res, next) => {
-    try {
+app.get('/products/:id/edit', wrapAsync(async (req, res, next) => {
         const { id } = req.params;
         const product = await Product.findById(id)
         if(!product) {
             throw new AppError('Product not found', 404);
          }
         res.render('products/edit', { product, categories })
-    }catch(e){
-        next(e);
-    }
-})
 
-app.put('/products/:id', async (req, res, next) => {
-    try {
+}))
+
+app.put('/products/:id', wrapAsync(async (req, res, next) => {
         const { id } = req.params;
         const product = await Product.findByIdAndUpdate(id, req.body, { runValidators: true, new: true })
         res.redirect(`/products/${product.id}`,)
-    } catch(e){
-        next(e);
-    }
-})
+}))
 app.delete('/products/:id', async (req, res) => {
     const { id } = req.params;
     await Product.findByIdAndDelete(id);
