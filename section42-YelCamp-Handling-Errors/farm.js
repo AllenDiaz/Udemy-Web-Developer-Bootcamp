@@ -17,10 +17,11 @@ mongoose.connect('mongodb://127.0.0.1:27017/farmStand')
     console.log(err)
 })
 
-app.set('views'), path.join(__dirname, 'views');
-app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}))
 app.use(methodOverride('_method')) 
+app.use(express.static(path.join(__dirname, 'public')))
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 const categories = ['fruit', 'vegetable', 'dairy']
 app.get('/products', async (req, res, next) => {
@@ -88,6 +89,15 @@ app.delete('/products/:id', async (req, res) => {
     
 })
 
+const handleValidationErr = err => {
+    console.dir(err);
+    return new AppError(`Validation Failed....${err.message}`, 404)
+}
+
+app.use((err, req, res, next) => {
+    if(err === "ValidationError") err = handleValidationErr(err)
+    next(err);
+})
 app.use((err, req, res, next) => {
     const {status = 500, message = 'Something went wrong'} = err;
     res.status(status).send(message); 
