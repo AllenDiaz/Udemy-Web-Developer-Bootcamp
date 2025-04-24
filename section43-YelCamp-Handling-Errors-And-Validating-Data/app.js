@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const Campground = require('./models/campground');
+const catchAsync = require('./utils/catchAsync')
+const expressError = require('./utils/ExpressError')
 
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
 
@@ -26,38 +28,33 @@ app.get('/', (req, res) => {
     res.render('home')
 })
 
-app.get('/campgrounds', async (req, res) => {
+app.get('/campgrounds', catchAsync(async (req, res) => {
     const campgrounds = await Campground.find({})
     res.render('campgrounds/index', { campgrounds })
-})
+}))
 
 app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new')
 })
 
-app.post('/campgrounds', async (req, res, next) => {
+app.post('/campgrounds', catchAsync(async (req, res, next) => {
     // res.send(req.body)
-    try {
         const campground = new Campground(req.body.campground);
         await campground.save();
         res.redirect(`/campgrounds/${campground._id}`)
-    } catch(e) {
-        next(e);s
-    }
+} ))
 
-} )
-
-app.get('/campgrounds/:id', async (req, res) => {
+app.get('/campgrounds/:id', catchAsync(async (req, res) => {
     const{ id } = req.params;
     const campground = await Campground.findById(id);
     res.render('campgrounds/show', {campground})
-})
+}))
 
-app.get('/campgrounds/:id/edit', async (req, res) => {
+app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
     const{ id } = req.params;
     const campground = await Campground.findById(id)
     res.render('campgrounds/edit', {campground})
-})
+}))
 
 app.put('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
