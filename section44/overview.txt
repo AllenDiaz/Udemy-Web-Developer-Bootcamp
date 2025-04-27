@@ -7,6 +7,6 @@ Crucial-
 Important- 
 1. Mongo Schema Design
 
-
+ 
 Nice to Have -
 1. SQL Relationship Overview
