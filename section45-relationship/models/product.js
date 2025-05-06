@@ -1,11 +1,11 @@
-// get the mongoose dependencies
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-// defining what is structure of the schema or model
-const productSchema = new mongoose.Schema({
+
+const productSchema = new Schema({
     name: {
         type: String,
-        required: [true, 'name cannot be blank']       
+        required: true
     },
     price: {
         type: Number,
@@ -16,11 +16,14 @@ const productSchema = new mongoose.Schema({
         type: String,
         lowercase: true,
         enum: ['fruit', 'vegetable', 'dairy']
+    },
+    farm: {
+        type: Schema.Types.ObjectId,
+        ref: 'Farm'
     }
-})
+});
 
-// creating a model with the name Product as a database collection name and 
-// productSchema as a structure of model
+
 const Product = mongoose.model('Product', productSchema);
 
-module.exports = Product;
+module.exports = Product; 

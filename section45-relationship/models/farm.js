@@ -1,54 +1,37 @@
 const mongoose = require('mongoose');
+const Product = require('./product');
 const { Schema } = mongoose;
 
-mongoose.connect('mongodb://127.0.0.1:27017/relationshipDemo')
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error"));
-db.once("open", () => {
-    console.log("Database connected")
-});
-
-const productSchema = new Schema({
-    name: String,
-    price: Number,
-    season:  {
-        type: String,
-        enum: ['Spring', 'Summer', 'Fall', 'Winter']
-    }
-});
-
 const farmSchema = new Schema({
-    name: String,
-    city: String,
-    products: [ { type: Schema.Types.ObjectID, ref: 'Product'} ]
+    name: {
+        type: String,
+        required: [true, 'Farm must have a name!']
+    },
+    city: {
+        type: String
+    },
+    email: {
+        type: String,
+        required: [true, 'Email required']
+    },
+    products: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Product'
+        }
+    ]
+});
+
+// DELETE ALL ASSOCIATED PRODUCTS AFTER A FARM IS DELETED
+farmSchema.post('findOneAndDelete', async function (farm) {
+    if (farm.products.length) {
+        const res = await Product.deleteMany({ _id: { $in: farm.products } })
+        console.log(res);
+    }
 })
 
-const Product = mongoose.model('Product', productSchema);
 const Farm = mongoose.model('Farm', farmSchema);
 
-// Product.insertMany( [
-//     {name: 'Water Melon', price: 4.99, season: 'Summer'},
-//     {name: 'Uchiha', price: 4.99, season: 'Spring'}
-// ] )
 
-// const makeFarm = async () => {
-//     const farm = new Farm({ name: 'Konoha Farm', city: 'Konoha'});
-//     const naruto = await Product.findOne({ name: 'Naruto'});
-//     farm.products.push(naruto);
-//     await farm.save();
-//     console.log(farm);
-// }
-// makeFarm();
 
-const addProduct = async () => {
-    const farm = await Farm.findOne({ name: 'Konoha Farm' });
-    const sasuke = await Product.findOne( { name: 'Sasuke' } )
-    farm.products.push(sasuke);
-    await farm.save();
-    console.log(farm)
-}
-
-Farm.findOne({ name: 'Konoha Farm' })
-    .populate('products')
-    .then( farm => console.log(farm))
+module.exports = Farm;

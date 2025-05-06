@@ -1,90 +1,139 @@
 const express = require('express');
-const morgan = require('morgan');
-const mongoose = require('mongoose');
-// const AppError = require('./AppError');
-const AppError = require('./appError');
 const app = express();
-
-mongoose.connect('mongodb://127.0.0.1:27017/farmStand2')
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error"));
-db.once("open", () => {
-    console.log("Database connected")
-});
+const path = require('path');
+const mongoose = require('mongoose');
+const methodOverride = require('method-override')
+const Product = require('./models/product');
+const Farm = require('./models/farm')
+const categories = ['fruit', 'vegetable', 'dairy'];
 
 
-app.use(morgan('tiny'))
-app.use((req, res, next) => {
-    req.requestTime = Date.now();
-    console.log(req.method, req.path);
-    next();
+mongoose.connect('mongodb://127.0.0.1:27017/farmStand')
+    .then(() => {
+        console.log("MONGO CONNECTION OPEN!!!")
+    })
+    .catch(err => {
+        console.log("OH NO MONGO CONNECTION ERROR!!!!")
+        console.log(err)
+    })
+
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'))
+
+// FARM ROUTES
+
+app.get('/farms', async (req, res) => {
+    const farms = await Farm.find({});
+    res.render('farms/index', { farms })
+})
+app.get('/farms/new', (req, res) => {
+    res.render('farms/new')
+})
+app.get('/farms/:id', async (req, res) => {
+    const farm = await Farm.findById(req.params.id).populate('products');
+    res.render('farms/show', { farm })
 })
 
-app.use('/dogs', (req, res, next) => {
-    console.log("I LOVE DOGS!! ")
-    next();
-} )
+app.delete('/farms/:id', async (req, res) => {
+    const farm = await Farm.findByIdAndDelete(req.params.id);
 
-const auth = (req, res, next) => {
-    const { password } = req.query;
-    if(password === 'open') {
-        next()
+    res.redirect('/farms');
+})
+
+
+app.post('/farms', async (req, res) => {
+    const farm = new Farm(req.body);
+    await farm.save();
+    res.redirect('/farms')
+})
+
+app.get('/farms/:id/products/new', async (req, res) => {
+    const { id } = req.params;
+    const farm = await Farm.findById(id);
+    res.render('products/new', { categories, farm })
+})
+
+app.post('/farms/:id/products', async (req, res) => {
+    const { id } = req.params;
+    const farm = await Farm.findById(id);
+    const { name, price, category } = req.body;
+    const product = new Product({ name, price, category });
+    farm.products.push(product);
+    product.farm = farm;
+    await farm.save();
+    await product.save();
+    res.redirect(`/farms/${id}`)
+})
+
+
+
+// PRODUCT ROUTES
+
+app.get('/products', async (req, res) => {
+    const { category } = req.query;
+    if (category) {
+        const products = await Product.find({ category })
+        res.render('products/index', { products, category })
+    } else {
+        const products = await Product.find({})
+        res.render('products/index', { products, category: 'All' })
     }
-    // res.send('sorry you need a password')
-    res.status(401)
-    throw new AppError('password required', 401)
-}
-// app.use((res, req, next) => {
-//     console.log('This is my first middleware')
-//     return next();
-// })
- 
-// app.use((res, req, next) => {
-//     console.log('This is my second middleware')
-//     return next();
-// })
-
-// app.use((res, req, next) => {
-//     console.log('This is my second middleware')
-//     return next();
-// }) 
-
-app.get('/', auth, (req, res) => {
-    console.log(`Request time date ${req.requestTime}`)
-    res.send('HOME PAGE')
 })
 
-app.get('/dogs', (req, res) => {
-    res.send('Woof Woof!')
+app.get('/products/new', (req, res) => {
+    // res.render('products/new', { categories })
+    res.send(`<h1>⚠️ ATTENTION, WRONG ROUTE! ⚠️</h1>
+    <h1>In this section, do <em>not</em> use the routes <em>starting</em> with "/products".</h1>
+    <h1>Instead, you will use the routes starting with "<a href="/farms" target="_blank">/farms</a>".</h1>
+    <h1>Therefore, please continue watching the lecture videos in this section and following Colt's exact steps.</h1>
+    <h1>For reference, these are the correct steps to create a farm and its products in this section:</h1>
+    <ol>
+        <li>Open the <a href="/farms" target="_blank">/farms</a> route and create (add) a new farm.</li>
+        <li>After creating a new farm, open the newly-created farm's show page.</li>
+        <li>On the farm's show page, click to create (add) a new product.</li>
+        <li>Create a new product from there.</li>
+    </ol>`);
 })
 
-app.get('/secret', auth, (req, res) => {
-    res.send('My Secret is walking with God')
+app.post('/products', async (req, res) => {
+    const newProduct = new Product(req.body);
+    await newProduct.save();
+    res.redirect(`/products/${newProduct._id}`)
 })
 
-app.get('/admin', (req, res) => {
-    throw new AppError('You not an Admin', 403)
+app.get('/products/:id', async (req, res) => {
+    const { id } = req.params;
+    const product = await Product.findById(id).populate('farm', 'name');
+    res.render('products/show', { product })
 })
 
-app.get('/error', (req, res) => {
-    chicken.fly()
+app.get('/products/:id/edit', async (req, res) => {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    res.render('products/edit', { product, categories })
 })
 
-app.use((req, res) => {
-    res.send('<h1 style="color:red; magin: 20 20"> Not found 404 </h1>')
+app.put('/products/:id', async (req, res) => {
+    const { id } = req.params;
+    const product = await Product.findByIdAndUpdate(id, req.body, { runValidators: true, new: true });
+    res.redirect(`/products/${product._id}`);
 })
 
-app.use((req, res) => {
-    res.status(404).send('Not Found')
+app.delete('/products/:id', async (req, res) => {
+    const { id } = req.params;
+    const deletedProduct = await Product.findByIdAndDelete(id);
+    res.redirect('/products');
 })
 
-app.use((err, req, res, next) => {
-    const { status = 500, message = "Something went wrong" } = err;
-    res.status(status).send(message)
-})
+
 
 app.listen(3000, () => {
-    console.log('Listening to port 3000')
-
+    console.log("APP IS LISTENING ON PORT 3000!")
 })
+
+
+
