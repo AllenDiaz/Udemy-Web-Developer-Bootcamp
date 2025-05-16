@@ -3,7 +3,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const Joi = require("joi");
-const { campgroundSchema } = require("./Schemas.js");
+const { campgroundSchema, reviewSchema } = require("./Schemas.js");
 const ExpressError = require("./utils/ExpressError.js");
 const methodOverride = require("method-override");
 const catchAsync = require("./utils/catchAsync.js");
@@ -39,6 +39,16 @@ const validateCampground = (req, res, next) => {
   }
 };
 
+const validateReview = (req, res, next) => {
+  //validating the schema
+  const { error } = reviewSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
 app.get("/", (req, res) => {
   res.render("home");
 });
@@ -104,6 +114,7 @@ app.delete("/campgrounds/:id", async (req, res) => {
 
 app.post(
   "/campgrounds/:id/reviews",
+  validateReview,
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
