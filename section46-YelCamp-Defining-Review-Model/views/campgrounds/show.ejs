@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') %>
 
 <div class="row mb-3">
-  <div class="col-6 offset-3">
+  <div class="col-6">
     <h1>Campground Detail</h1>
     <div class="card p-2">
       <img src="<%= campground.image %>" alt="" />
@@ -33,47 +33,52 @@
       </div>
 
       <div class="card-footer text-muted">2 days ago</div>
-      <form
-        action="/campgrounds/<%= campground._id %>/reviews"
-        method="POST"
-        class="mb-3 validated-form"
-        novalidate
-      >
-        <div class="mb-3">
-          <label class="form-label" for="rating">Rating</label>
-          <input
-            class="form-range"
-            type="range"
-            min="1"
-            max="5"
-            name="review[rating]"
-            id="rating"
-            required
-          />
-          <div class="valid-feedback">looks good!</div>
-        </div>
-        <div class="mb-2">
-          <label for="body">Review:</label>
-          <textarea
-            class="form-control"
-            name="review[body]"
-            id="body"
-            cols="30"
-            rows="3"
-            required
-          ></textarea>
-          <div class="valid-feedback">looks good!</div>
-        </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <form
+      action="/campgrounds/<%= campground._id %>/reviews"
+      method="POST"
+      class="mb-3 validated-form"
+      novalidate
+    >
+      <h2>Leave a review</h2>
+      <div class="mb-3">
+        <label class="form-label" for="rating">Rating</label>
+        <input
+          class="form-range"
+          type="range"
+          min="1"
+          max="5"
+          name="review[rating]"
+          id="rating"
+          required
+        />
+        <div class="valid-feedback">looks good!</div>
+      </div>
+      <div class="mb-2">
+        <label for="body">Review:</label>
+        <textarea
+          class="form-control"
+          name="review[body]"
+          id="body"
+          cols="30"
+          rows="3"
+          required
+        ></textarea>
+        <div class="valid-feedback">looks good!</div>
+      </div>
 
-        <button class="btn btn-success">Submit</button>
-      </form>
-      <div class="mb-6">
-        <% for(let review of campground.reviews) {%>
+      <button class="btn btn-success">Submit</button>
+    </form>
+    <% for(let review of campground.reviews) {%>
+    <div class="card mb-3">
+      <div class="card-body">
         <p>rating: <%= review.rating %></p>
         <p>review: <%= review.body %></p>
-        <% } %>
       </div>
     </div>
+    <% } %>
   </div>
 </div>
 <footer></footer>
