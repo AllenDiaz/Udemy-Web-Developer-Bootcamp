@@ -67,6 +67,12 @@
 
         <button class="btn btn-success">Submit</button>
       </form>
+      <div class="mb-6">
+        <% for(let review of campground.reviews) {%>
+        <p>rating: <%= review.rating %></p>
+        <p>review: <%= review.body %></p>
+        <% } %>
+      </div>
     </div>
   </div>
 </div>
