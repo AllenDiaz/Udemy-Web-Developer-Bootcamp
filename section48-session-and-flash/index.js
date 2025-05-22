@@ -30,6 +30,16 @@ app.get("/getsession", (req, res) => {
   res.send(`So you are ${name} and you are a ${role} `);
 });
 
+app.get("/signin", (req, res) => {
+  const { username } = req.query;
+  req.session.username = username;
+  res.redirect("/login");
+});
+
+app.get("/login", (req, res) => {
+  res.send(`welcome ${req.session.username || "unknown"}`);
+});
+
 app.listen("3000", () => {
   console.log("Localhost run on 3000");
 });
