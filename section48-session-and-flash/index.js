@@ -1,45 +1,63 @@
 const express = require("express");
-const session = require("express-session");
 const app = express();
+const path = require("path");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const flash = require("connect-flash");
 
-app.use(
-  session({
-    secret: "thisissecret",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 60000 },
+const sessionOptions = {
+  secret: "thisisnotagoodsecret",
+  resave: false,
+  saveUninitialized: false,
+};
+app.use(session(sessionOptions));
+app.use(flash());
+
+const Farm = require("./models/farm");
+
+mongoose
+  .connect("mongodb://localhost:27017/flashDemo", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-);
+  .then(() => {
+    console.log("MONGO CONNECTION OPEN!!!");
+  })
+  .catch((err) => {
+    console.log("OH NO MONGO CONNECTION ERROR!!!!");
+    console.log(err);
+  });
 
-app.get("/", (req, res) => {
-  res.send("Session management is active");
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+app.use(express.urlencoded({ extended: true }));
+
+// FARM ROUTES
+
+app.use((req, res, next) => {
+  next();
 });
 
-app.get("/setsession", (req, res) => {
-  req.session.user = { name: "Allen", role: "Developer" };
-  res.send("Session data has been set!");
+app.get("/farms", async (req, res) => {
+  const farms = await Farm.find({});
+  res.render("farms/index", { farms, messages: req.flash("success") });
+});
+app.get("/farms/new", (req, res) => {
+  res.render("farms/new");
+});
+app.get("/farms/:id", async (req, res) => {
+  const farm = await Farm.findById(req.params.id).populate("products");
+  res.render("farms/show", { farm });
 });
 
-//get session
-app.get("/getsession", (req, res) => {
-  // Ensure session.user exists before accessing properties
-  const user = req.session.user || {};
-  const name = user.name || "unknown"; //if this false get value
-  const role = user.role || "unknown";
-
-  res.send(`So you are ${name} and you are a ${role} `);
+app.post("/farms", async (req, res) => {
+  const farm = new Farm(req.body);
+  await farm.save();
+  req.flash("success", "Successfully made a new farm!");
+  res.redirect("/farms");
 });
 
-app.get("/signin", (req, res) => {
-  const { username } = req.query;
-  req.session.username = username;
-  res.redirect("/login");
-});
-
-app.get("/login", (req, res) => {
-  res.send(`welcome ${req.session.username || "unknown"}`);
-});
-
-app.listen("3000", () => {
-  console.log("Localhost run on 3000");
+app.listen(3000, () => {
+  console.log("APP IS LISTENING ON PORT 3000!");
 });
