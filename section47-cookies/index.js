@@ -1,13 +1,16 @@
 const express = require("express");
 const app = express();
-const shelterRoutes = require("./routes/shelters.js");
-const dogRoutes = require("./routes/dogs.js");
-const adminRoutes = require("./routes/admin.js");
 
-app.use("/", shelterRoutes);
-app.use("/dogs", dogRoutes);
-app.use("/admin", adminRoutes);
+app.get("/greet", (req, res) => {
+  res.send("Hi Allen");
+});
 
-app.listen(3000, () => {
-  console.log("Serving app on localhost");
+app.get("/setname", (req, res) => {
+  res.cookie("name", "Allen Diaz");
+  res.cookie("animal", "Dog");
+  res.send("Allen Diaz");
+});
+app.get("/setname", (req, res) => {});
+app.listen("3000", () => {
+  console.log("Localhost run on 3000");
 });
