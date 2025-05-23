@@ -2,15 +2,12 @@ const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
-const Joi = require("joi");
-const { campgroundSchema, reviewSchema } = require("./Schemas.js");
+const campgrounds = require("./routes/campground.js");
+const reviews = require("./routes/review.js");
 const ExpressError = require("./utils/ExpressError.js");
 const methodOverride = require("method-override");
 const catchAsync = require("./utils/catchAsync.js");
-const Campground = require("./models/campground.js");
-const Review = require("./models/review.js");
-const campgrounds = require("./routes/campground.js");
-const reviews = require("./routes/review.js");
+const session = require("express-session");
 // const expressError = require('./utils/ExpressError')
 
 mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
@@ -33,6 +30,19 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/campgrounds", campgrounds);
 app.use("/campgrounds/:id/reviews", reviews);
+
+const sessionConfig = {
+  secret: "recentpassword",
+  resave: false,
+  saveUnitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
+
+app.use(session(sessionConfig));
 
 app.get("/", (req, res) => {
   res.render("home");
