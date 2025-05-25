@@ -4,13 +4,11 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
 const methodOverride = require("method-override");
-const catchAsync = require("./utils/catchAsync.js");
-// const expressError = require('./utils/ExpressError')
-const campgrounds = require("./routes/campground.js");
-const reviews = require("./routes/review.js");
-
 const session = require("express-session");
 const flash = require("connect-flash");
+
+const campgrounds = require("./routes/campground.js");
+const reviews = require("./routes/review.js");
 
 mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
 
@@ -53,13 +51,10 @@ app.use((req, res, next) => {
 app.use("/campgrounds", campgrounds);
 app.use("/campgrounds/:id/reviews", reviews);
 
-app.get(
-  "/",
-  catchAsync(async (req, res) => {
-    req.flash("success", "Successfully made a new campground!");
-    res.render("home");
-  })
-);
+app.get("/", async (req, res) => {
+  req.flash("success", "Successfully made a new campground!");
+  res.render("home");
+});
 
 app.all(/(.*)/, (req, res, next) => {
   next(new ExpressError(" page not found", 404));

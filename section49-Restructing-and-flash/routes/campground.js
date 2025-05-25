@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const flash = require("connect-flash");
 const catchAsync = require("../utils/catchAsync.js");
 const Campground = require("../models/campground.js");
 const { campgroundSchema } = require("../Schemas.js");
@@ -66,12 +65,14 @@ router.put("/:id", async (req, res) => {
   const campground = await Campground.findByIdAndUpdate(id, {
     ...req.body.campground,
   });
+  req.flash("success", "Successfully update!");
   res.redirect(`/campgrounds/${id}`);
 });
 
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
+  req.flash("success", "Successfully delete the campground");
   res.redirect("/campgrounds");
 });
 
