@@ -18,6 +18,13 @@ app.set("views", "views");
 
 app.use(express.urlencoded({ extended: true }));
 
+const requireLogin = (req, res, next) => {
+  if (!req.session.user_id) {
+    return res.redirect("/login");
+  }
+  next();
+};
+
 const sessionConfig = {
   secret: "notagoodsecret",
 };
@@ -60,10 +67,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/secret", (req, res) => {
-  if (!req.session.user_id) {
-    return res.redirect("/login");
-  }
+app.get("/secret", requireLogin, (req, res) => {
   res.render("secret");
 });
 
