@@ -1,0 +1,2 @@
+Authentication - verify who's user
+Authorization - verify what use access to 
