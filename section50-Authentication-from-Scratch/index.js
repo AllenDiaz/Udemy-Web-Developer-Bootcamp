@@ -40,6 +40,22 @@ app.post("/register", async (req, res) => {
   res.redirect("/");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (validPassword) {
+    res.send("YAY Welcome");
+  } else {
+    res.send("Incorrect username or password");
+  }
+  // if( user.password = password.value  )
+});
+
 app.listen(3000, () => {
   console.log("Serving your app!");
 });
