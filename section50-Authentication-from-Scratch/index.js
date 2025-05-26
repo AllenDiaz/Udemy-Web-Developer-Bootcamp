@@ -4,6 +4,7 @@ const User = require("./models/user");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const session = require("express-session");
+// const user = require("./models/user");
 
 mongoose.connect("mongodb://127.0.0.1:27017/auth");
 
@@ -41,13 +42,12 @@ app.get("/register", (req, res) => {
 
 app.post("/register", async (req, res) => {
   const { password, username } = req.body;
-  const hash = await bcrypt.hash(password, 12);
   const user = new User({
     username,
-    password: hash,
+    password,
   });
   await user.save();
-  req.session.user_id = user._id;
+  req.session.user_id = User._id;
   res.redirect("/");
 });
 
@@ -57,10 +57,10 @@ app.get("/login", (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (validPassword) {
-    req.session.user_id = user._id;
+  const foundUser = await User.findAndValidate(username, password);
+  console.log(foundUser);
+  if (foundUser) {
+    req.session.user_id = foundUser._id;
     return res.redirect("/secret");
   } else {
     res.redirect("/login");
