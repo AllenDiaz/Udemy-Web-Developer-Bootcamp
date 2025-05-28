@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const { reviewSchema } = require("../Schemas");
+const { reviewSchema } = require("../Schemas.js");
 const Campground = require("../models/campground.js");
 const Review = require("../models/review.js");
 const ExpressError = require("../utils/ExpressError.js");

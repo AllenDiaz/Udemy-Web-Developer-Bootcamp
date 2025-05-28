@@ -9,9 +9,9 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
-
-const campgrounds = require("./routes/campground.js");
-const reviews = require("./routes/review.js");
+const campgroundRoutes = require("./routes/campgrounds.js");
+const reviewRoutes = require("./routes/reviews.js");
+const userRoutes = require("./routes/users.js");
 
 mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
 
@@ -29,6 +29,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.static(path.join(__dirname, "public")));
 
 const sessionConfig = {
@@ -67,8 +68,9 @@ app.get("/fakeUser", async (req, res) => {
   res.send(newUser);
 });
 
-app.use("/campgrounds", campgrounds);
-app.use("/campgrounds/:id/reviews", reviews);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
+app.use("/", userRoutes);
 
 app.get("/", async (req, res) => {
   req.flash("success", "Successfully made a new campground!");
