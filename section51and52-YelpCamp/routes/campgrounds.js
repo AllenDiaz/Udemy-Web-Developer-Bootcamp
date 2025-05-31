@@ -44,6 +44,8 @@ router.get(
       .populate("reviews")
       .populate("author");
 
+    const review = Review.find({});
+
     if (!campground) {
       req.flash("error", "Cannot find the campground");
       return res.redirect("/campgrounds");
