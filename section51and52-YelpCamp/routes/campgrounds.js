@@ -2,19 +2,11 @@ const express = require("express");
 const router = express.Router();
 const catchAsync = require("../utils/catchAsync.js");
 const Campground = require("../models/campground.js");
-const { campgroundSchema } = require("../Schemas.js");
-const ExpressError = require("../utils/ExpressError.js");
-const { isLoggedIn } = require("../middleware.js");
-const validateCampground = (req, res, next) => {
-  //validating the schema
-  const { error } = campgroundSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
+const {
+  isLoggedIn,
+  isAuthor,
+  validateCampground,
+} = require("../middleware.js");
 
 router.get(
   "/",
@@ -52,7 +44,6 @@ router.get(
       .populate("reviews")
       .populate("author");
 
-    console.log(campground);
     if (!campground) {
       req.flash("error", "Cannot find the campground");
       return res.redirect("/campgrounds");
@@ -64,6 +55,7 @@ router.get(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
@@ -75,16 +67,22 @@ router.get(
   })
 );
 
-router.put("/:id", validateCampground, isLoggedIn, async (req, res) => {
-  const { id } = req.params;
-  const campground = await Campground.findByIdAndUpdate(id, {
-    ...req.body.campground,
-  });
-  req.flash("success", "Successfully update!");
-  res.redirect(`/campgrounds/${id}`);
-});
+router.put(
+  "/:id",
+  validateCampground,
+  isLoggedIn,
+  isAuthor,
+  async (req, res) => {
+    const { id } = req.params;
+    const camp = await Campground.findByIdAndUpdate(id, {
+      ...req.body.campground,
+    });
+    req.flash("success", "Successfully update!");
+    res.redirect(`/campgrounds/${id}`);
+  }
+);
 
-router.delete("/:id", isLoggedIn, async (req, res) => {
+router.delete("/:id", isLoggedIn, isAuthor, async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
   req.flash("success", "Successfully delete the campground");
