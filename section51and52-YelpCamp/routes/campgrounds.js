@@ -7,6 +7,7 @@ const {
   isAuthor,
   validateCampground,
 } = require("../middleware.js");
+const { reviewSchema } = require("../Schemas.js");
 
 router.get(
   "/",
@@ -41,10 +42,15 @@ router.get(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id)
-      .populate("reviews")
+      .populate({
+        path: "reviews",
+        populate: {
+          path: "author",
+        },
+      })
       .populate("author");
 
-    const review = Review.find({});
+    // const review = Review.find({});
 
     if (!campground) {
       req.flash("error", "Cannot find the campground");

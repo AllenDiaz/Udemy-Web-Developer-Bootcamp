@@ -1,6 +1,7 @@
 const session = require("express-session");
 const { campgroundSchema, reviewSchema } = require("./Schemas");
 const Campground = require("./models/campground");
+const Review = require("./models/review");
 const ExpressError = require("./utils/ExpressError");
 
 const isLoggedIn = (req, res, next) => {
@@ -25,6 +26,16 @@ module.exports.isAuthor = async (req, res, next) => {
   const { id } = req.params;
   const campground = await Campground.findById(id);
   if (!campground.author.equals(req.user._id)) {
+    req.flash("error", "Oops your not allowed here");
+    return res.redirect(`/campgrounds/${id}`);
+  }
+  next();
+};
+
+module.exports.isReviewAuthor = async (req, res, next) => {
+  const { id, reviewId } = req.params;
+  const review = await Review.findById(reviewId);
+  if (!review.author.equals(req.user._id)) {
     req.flash("error", "Oops your not allowed here");
     return res.redirect(`/campgrounds/${id}`);
   }
