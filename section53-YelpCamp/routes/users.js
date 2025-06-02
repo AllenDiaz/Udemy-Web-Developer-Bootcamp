@@ -6,21 +6,19 @@ const User = require("../models/user");
 const passport = require("passport");
 const users = require("../controllers/users");
 
-router.get("/register", users.renderRegister);
+router.route("/register").get(users.renderRegister).post(users.register);
 
-router.post("/register", catchAsync(users.register));
-
-router.get("/login", users.renderLogin);
-
-router.post(
-  "/login",
-  storeReturnTo,
-  passport.authenticate("local", {
-    failureFlash: true,
-    failureRedirect: "/login",
-  }),
-  users.login
-);
+router
+  .route("/login")
+  .get(users.renderLogin)
+  .post(
+    storeReturnTo,
+    passport.authenticate("local", {
+      failureFlash: true,
+      failureRedirect: "/login",
+    }),
+    users.login
+  );
 
 router.get("/logout", users.logout);
 
