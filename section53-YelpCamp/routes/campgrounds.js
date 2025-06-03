@@ -17,7 +17,7 @@ const {
 router
   .route("/")
   .get(catchAsync(campgrounds.index))
-  .post(upload.single("image"), (req, res) => {
+  .post(upload.array("image"), (req, res) => {
     console.log(req.body, req.files);
     res.send("It worked");
   });
