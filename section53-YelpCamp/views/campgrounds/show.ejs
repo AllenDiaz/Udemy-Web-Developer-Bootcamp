@@ -5,7 +5,9 @@
   <div class="col-6">
     <h1>Campground Detail</h1>
     <div class="card p-2">
-      <img src="<%= campground.image %>" alt="" />
+      <% for(let img of campground.images){ %>
+      <img src="<%= img.url %>" alt="" />
+      <% } %>
       <div class="card-body">
         <h5 class="card-title">Name of Camp: <%= campground.title %></h5>
         <p class="card-text"><%= campground.description %></p>
