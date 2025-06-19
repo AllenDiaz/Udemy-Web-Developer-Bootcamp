@@ -29,7 +29,7 @@ map.on("load", function () {
         ["get", "point_count"],
         "#00BCD8",
         10,
-        "#2196F3",
+        "#2196F2",
         30,
         "#3F51B5",
       ],
