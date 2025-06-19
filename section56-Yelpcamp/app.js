@@ -79,7 +79,6 @@ app.use("/campgrounds/:id/reviews", reviewRoutes);
 app.use("/", userRoutes);
 
 app.get("/", async (req, res) => {
-  req.flash("success", "Successfully made a new campground!");
   res.render("home");
 });
 
