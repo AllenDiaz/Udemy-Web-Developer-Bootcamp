@@ -27,7 +27,7 @@ map.on("load", function () {
       "circle-color": [
         "step",
         ["get", "point_count"],
-        "#00BCD4",
+        "#00BCD8",
         10,
         "#2196F3",
         30,
