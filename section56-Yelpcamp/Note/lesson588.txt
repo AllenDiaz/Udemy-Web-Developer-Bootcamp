@@ -1,0 +1,97 @@
+IMPORTANT NOTE: About The express-mongo-sanitize Package
+⚠️ PLEASE READ CAREFULLY! ⚠️
+Hello everyone,
+
+In the following lecture video, Colt shows and uses a package named express-mongo-sanitize, which is currently not compatible with the newest Express version 5.
+
+Therefore, if you are using the latest Express version 5 (you can check the "express" version in your project's package.json file), when you start using the express-mongo-sanitize package in your code while following the next lecture video, you might start getting an error. On the other hand, in your package.json file, if you see that "express" uses the version 4.x, then you shouldn't be getting an error during the next video.
+
+In any case, the original express-mongo-sanitize package might get updated in the future, but for now, these are the two easiest solutions:
+
+1) Solution #1 - Use the same Express version 4 like in the course and then it should work:
+
+You can copy/paste and run this exact command from your main project folder (where the project's app.js and package.json files are located):
+
+npm install express@4.21.2 express-mongo-sanitize@2.2.0
+Then, start your node app again.
+
+2) Solution #2 - Create a custom updated sanitizer logic (which is still based on the express-mongo-sanitize module, but with modifications) that works with Express version 5. Follow these steps:
+
+1. Create a brand-new file named mongoSanitizeV5.js in the utils folder of your project (so the project file path would be utils/mongoSanitizeV5.js - note: make sure to always exactly match the uppercase and lowercase letters in the file name), open it in VS Code and copy-paste the following exact code into that file:
+
+Note: By the way, don't worry about understanding the code below at this moment, it's pretty complicated, but the point is just that we override and update how the express-mongo-sanitize internal logic works, so it's compatible with Express version 5):
+
+const mongoSanitize = require('express-mongo-sanitize');
+ 
+// deep-clone helper
+function deepCopy(obj) {
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(deepCopy);
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [k, deepCopy(v)])
+  );
+}
+ 
+// middleware
+module.exports = function sanitizeV5(options = {}) {
+  const hasOnSanitize = typeof options.onSanitize === 'function';
+ 
+  return function (req, _res, next) {
+ 
+    // still writable fields
+    ['body', 'params', 'headers'].forEach(key => {
+      if (req[key]) {
+        const clean = mongoSanitize.sanitize(req[key], options);
+        req[key] = clean;
+        if (hasOnSanitize && mongoSanitize.has(clean, options.allowDots)) {
+          options.onSanitize({req, key});
+        }
+      }
+    });
+ 
+    // updating handling of read-only req.query (getter in Express 5)
+    if (req.query) {
+      const cleanQuery = mongoSanitize.sanitize(deepCopy(req.query), options);
+ 
+      // replace the getter with a concrete, sanitized value
+      Object.defineProperty(req, 'query', {
+        value: cleanQuery,
+        writable: false,
+        configurable: true,
+        enumerable: true
+      });
+ 
+      if (hasOnSanitize && mongoSanitize.has(cleanQuery, options.allowDots)) {
+        options.onSanitize({req, key: 'query'});
+      }
+    }
+ 
+    next();
+  };
+};
+After copy-pasting all this exact code above in your utils/mongoSanitizeV5.js file, make sure to save the file changes in VS Code.
+
+2. Then, add this line at the top part of your app.js file (where all the other modules are required):
+
+const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
+
+3. After that, also in your app.js file, add the following line right after the existing const app = express(); line in your code:
+
+app.set('query parser', 'extended');
+
+4. Still in the app.js file, delete this code (it's from the upcoming lecture videos, we do not want to use it):
+
+app.use(mongoSanitize({ ... }));
+
+5. Instead of it, on the same line in app.js (i.e., right below the app.use(express.static(path.join(__dirname, 'public'))) line), add this code:
+
+app.use(sanitizeV5({ replaceWith: '_' }));
+
+* Note: Watch the next lecture video fully until the very end when testing this, to be clear about what replaceWith: '_' does.
+
+6. Save the app.js file changes, restart your node app in the terminal, and then it should work when using the Express module version 5.
+
+Please reach out on the course Q&A boards if you need more help with this, or if you have any questions.
+
+Thank you!
+Zarko — Course Teaching Assistant

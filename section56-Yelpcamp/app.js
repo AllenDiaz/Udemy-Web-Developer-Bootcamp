@@ -11,6 +11,8 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const sanitizeV5 = require("./utils/mongoSanitizeV5.js");
+
 const User = require("./models/user.js");
 const campgroundRoutes = require("./routes/campgrounds.js");
 const reviewRoutes = require("./routes/reviews.js");
@@ -25,6 +27,7 @@ db.once("open", () => {
 });
 
 const app = express();
+app.set("query parser", "extended");
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -34,6 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 // app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(sanitizeV5({ replaceWith: "_" }));
 
 const sessionConfig = {
   secret: "thisshouldbeabettersecret!",
