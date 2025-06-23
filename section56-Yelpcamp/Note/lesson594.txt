@@ -1,0 +1,49 @@
+IMPORTANT: Helmet Updates — Fixing Issues
+In the upcoming videos, we use a module named Helmet to add security to our application. Since the upcoming video lecture was recorded, the Helmet module went through some version updates. Because of that, if you are using the newest version of Helmet, there are some code changes that you need to make in order for everything to work correctly. Therefore, keep this lecture note handy while following the upcoming lectures about Helmet.
+
+Due to the mentioned changes to Helmet, maps and images might stop loading when viewing your application pages in the browser — you might see these errors in the browser console when this happens:
+
+Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOriginAfterDefaultedToSameOriginByCoep
+
+Uncaught ReferenceError: mapboxgl is not defined
+
+To solve this, we need to add the crossorigin="anonymous" attribute to all the HTML elements that include resources from external origins. This will allow our application pages to successfully load link and script elements that use external CDN servers (including Mapbox), and also to load images from Cloudinary. Basically, for any resource that we are loading from a different origin and not from our app internally, we need to add the mentioned crossorigin="anonymous" attribute which will then allow this in the browser.
+
+To be more specific, in your YelpCamp application code, make sure to add the crossorigin="anonymous" attribute to these places in your app code:
+
+1. To make the campgrounds index page images work, add the crossorigin="anonymous" attribute to both of the img elements here: [link to Colt's solution code]
+
+You should change that part of the code to this:
+
+<% if (campground.images.length) { %>
+    <img crossorigin="anonymous" class="img-fluid" alt="" src="<%= campground.images[0].url %>">
+<% } else { %>
+    <img crossorigin="anonymous" class="img-fluid" alt="" src="https://res.cloudinary.com/douqbebwk/image/upload/v1600103881/YelpCamp/lz8jjv2gyynjil7lswf4.png">
+<% } %>
+2. To make the campground show page images work, add the crossorigin="anonymous" attribute here: [link to Colt's solution code]
+
+You should change that part of the code to this:
+
+<img crossorigin="anonymous" src="<%= img.url %>" class="d-block w-100" alt="">
+3. To allow Mapbox to load properly so maps can work for your app, add the crossorigin="anonymous" attribute to both the Mapbox (or MapTiler Cloud) link and script element here: [link to Colt's solution code]
+
+You should change that part of the code to this:
+
+· If you are using Mapbox for maps:
+
+<script crossorigin="anonymous" src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+<link crossorigin="anonymous" href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet"/>
+· If you switched to using the MapTiler Cloud alternative for maps:
+
+<script crossorigin="anonymous" src="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.umd.min.js"></script>
+<link crossorigin="anonymous" href="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.css" rel="stylesheet">
+4. If you are using 'bs-custom-file-input', then add it to that script element as well: [link to Colt's solution code]
+
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+5. If you have been following Colt’s code, the Bootstrap CDN link and script elements should already have the crossorigin="anonymous" attribute set — see Colt's solution code [here] and [here]. If by any chance the crossorigin="anonymous" attribute is missing from your Bootstrap link and script elements in the views/layouts/boilerplate.ejs code, make sure to add it there as well.
+
+Also, in your views/home.ejs code, add the crossorigin="anonymous" attribute to the Bootstrap-related CDN link/script elements.
+
+After adding the crossorigin="anonymous" attribute to all the elements that load external resources from a different origin, save all your file changes, then run the app and test it out in the browser — it should all work now!
+
+If you need any help or if you run into any other issues with it, feel free to reach out on the Q&A boards.
