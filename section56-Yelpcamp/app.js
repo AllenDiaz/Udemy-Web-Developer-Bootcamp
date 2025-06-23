@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -18,9 +19,14 @@ const campgroundRoutes = require("./routes/campgrounds.js");
 const reviewRoutes = require("./routes/reviews.js");
 const userRoutes = require("./routes/users.js");
 const sanitizeV5 = require("./utils/mongoSanitizeV5.js");
-
-mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
-
+const dbUrl = process.env.DB_URL;
+mongoose.connect(dbUrl, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+});
+console.log("add");
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error"));
 db.once("open", () => {
@@ -55,6 +61,7 @@ const styleSrcUrls = [
   "https://stackpath.bootstrapcdn.com/",
   // "https://api.mapbox.com/",
   // "https://api.tiles.mapbox.com/",
+
   "https://fonts.googleapis.com/",
   "https://use.fontawesome.com/",
   "https://cdn.jsdelivr.net",
