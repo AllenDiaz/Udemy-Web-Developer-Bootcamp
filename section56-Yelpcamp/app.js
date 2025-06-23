@@ -11,12 +11,13 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const sanitizeV5 = require("./utils/mongoSanitizeV5.js");
+const helmet = require("helmet");
 
 const User = require("./models/user.js");
 const campgroundRoutes = require("./routes/campgrounds.js");
 const reviewRoutes = require("./routes/reviews.js");
 const userRoutes = require("./routes/users.js");
+const sanitizeV5 = require("./utils/mongoSanitizeV5.js");
 
 mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
 
@@ -38,6 +39,11 @@ app.use(methodOverride("_method"));
 // app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(sanitizeV5({ replaceWith: "_" }));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 const sessionConfig = {
   name: "session",
