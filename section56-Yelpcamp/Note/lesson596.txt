@@ -1,0 +1,51 @@
+NOTE! If you switched from Mapbox to MapTiler Cloud for maps in YelpCamp
+NOTE: You can skip this note if you are still using Mapbox for maps in YelpCamp.
+
+Otherwise, if you are not using Mapbox in YelpCamp, but instead you switched to MapTiler Cloud by following the MapTiler alternative tutorial found in the "YelpCamp Maps: MapTiler — Replacement for Mapbox" written lecture in Section 55: https://www.udemy.com/course/the-web-developer-bootcamp/learn/lecture/44374116
+
+Then, for MapTiler Cloud, read below:
+
+In the upcoming lecture video named "Content Security Policy Fun", we add the Helmet content security policy. If you are not using Mapbox and you switched to using MapTiler Cloud for the maps feature in YelpCamp, you need to make the following updates to the Helmet configuration after watching the next lecture:
+
+1. Update scriptSrcUrls, styleSrcUrls, and connectSrcUrls:
+
+const scriptSrcUrls = [
+    "https://stackpath.bootstrapcdn.com/",
+    // "https://api.tiles.mapbox.com/",
+    // "https://api.mapbox.com/",
+    "https://kit.fontawesome.com/",
+    "https://cdnjs.cloudflare.com/",
+    "https://cdn.jsdelivr.net",
+    "https://cdn.maptiler.com/", // add this
+];
+const styleSrcUrls = [
+    "https://kit-free.fontawesome.com/",
+    "https://stackpath.bootstrapcdn.com/",
+    // "https://api.mapbox.com/",
+    // "https://api.tiles.mapbox.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+    "https://cdn.jsdelivr.net",
+    "https://cdn.maptiler.com/", // add this
+];
+const connectSrcUrls = [
+    // "https://api.mapbox.com/",
+    // "https://a.tiles.mapbox.com/",
+    // "https://b.tiles.mapbox.com/",
+    // "https://events.mapbox.com/",
+    "https://api.maptiler.com/", // add this
+];
+Note: the commented-out lines with Mapbox URLs in the code above are not needed if you are not using Mapbox.
+
+2. Also, make the following addition in the imgSrc array of the Helmet configuration:
+
+            imgSrc: [
+                // all your other existing code
+                
+                // add this:
+                "https://api.maptiler.com/",
+            ],
+If you get any issues with it, please reach out to the course Q&A boards and let us know.
+
+Kind regards,
+Zarko — Course Teaching Assistant
