@@ -20,6 +20,7 @@ const reviewRoutes = require("./routes/reviews.js");
 const userRoutes = require("./routes/users.js");
 const sanitizeV5 = require("./utils/mongoSanitizeV5.js");
 const dbUrl = process.env.DB_URL;
+//"mongodb://127.0.0.1:27017/yelp-camp"
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useCreateIndex: true,

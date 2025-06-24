@@ -1,0 +1,40 @@
+IMPORTANT: connect-mongo — Handling Updates
+Before you proceed with the upcoming 'Using Mongo For Our Session Store' video lecture for the YelpCamp app project, please be aware that the connect-mongo module we use there has been updated since the recording of that lecture. As a result, some of the code in the app.js file needs to be adjusted, so be sure to keep this lecture note handy while following the next video (it will make sense then!)
+
+Basically, you might see the following error message when implementing the mentioned connect-mongo module in your app if you are coding along while watching the upcoming lecture: TypeError: Class constructor MongoStore cannot be invoked without 'new'
+
+Here are two options to fix this:
+1. Install the same version (v3.2.0) as used by Colt in the lecture, which allows you to follow the video lecture code without any changes
+To install and use the older version of connect-mongo — in the terminal, in main project folder, you can run the npm install command with this syntax to install the connect-mongo version 3.2.0 specifically:
+
+npm install connect-mongo@3.2.0
+
+2. Install the latest version of connect-mongo and then update the app.js code accordingly
+First, install the latest version of the connect-mongo module with this npm install command:
+
+npm install connect-mongo@latest
+
+Based on the updated documentation for the latest connect-mongo version currently, I found that we have to make the following changes in the app.js code (instead of the old connect-mongo v3.2.0 configuration lines):
+
+- First, we require MongoStore differently:
+
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+* Make sure that you don't repeat the 'const session' declaration line twice in your code, it should be already present if you are following Colt's code.
+
+* Make sure to remove the old 'const MongoDBStore' line present in Colt's code if you are using the updated connect-mongo version — check this link to find the highlighted line that you should not use anymore with the newest versions of connect-mongo.
+
+- Then, with the latest connect-mongo version, we should use the MongoStore.create() method to create the store (which has some differences in this new version, like specifying the mongoUrl property, and the crypto/secret properties):
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
+After making those changes, things should work correctly with the latest connect-mongo version too! If you see any errors while visiting the app pages after implementing this, then try to clear your localhost domain session data/cookies in the browser (clear them just for localhost, you do not need to delete them for your other websites), or try to access your app from a private/incognito browser window after modifying this session configuration.
+
+If you need any further help with this, please reach out to the course Q&A boards.
+
+Zarko — Teaching Assistant
